@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "octy-habits"
-  }
+  },
+  "targets": {
+    "octy-habits": {
+      "hosting": {
+        "customsite": [
+          "octyhabits"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

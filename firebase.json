@@ -38,7 +38,11 @@
       }
     }
   },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
   "hosting": {
+    "target": "customsite",
     "public": "build/web",
     "ignore": [
       "firebase.json",

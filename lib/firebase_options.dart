@@ -45,7 +45,7 @@ class DefaultFirebaseOptions {
     appId: '1:428183904453:web:c6e54eebee879e8acc90ac',
     messagingSenderId: '428183904453',
     projectId: 'octy-habits',
-    authDomain: 'octy-habits.firebaseapp.com',
+    authDomain: 'octyhabits.web.app',
     storageBucket: 'octy-habits.firebasestorage.app',
     measurementId: 'G-JBV9XXKESR',
   );

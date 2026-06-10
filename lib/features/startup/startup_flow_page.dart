@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../core/notifications/local_notifications_service.dart';
 import '../../core/theme/app_theme.dart';
@@ -242,6 +244,43 @@ class _AuthPageState extends ConsumerState<_AuthPage> {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    setState(() => _loading = true);
+    try {
+      final auth = ref.read(firebaseAuthProvider);
+      if (kIsWeb) {
+        final googleProvider = GoogleAuthProvider();
+        googleProvider.setCustomParameters({
+          'prompt': 'select_account',
+        });
+        await auth.signInWithPopup(googleProvider);
+      } else {
+        final googleSignIn = GoogleSignIn();
+        final googleUser = await googleSignIn.signIn();
+        if (googleUser != null) {
+          final googleAuth = await googleUser.authentication;
+          final credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+          await auth.signInWithCredential(credential);
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google ile giriş başarısız: ${e.message ?? e.code}')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Giriş sırasında hata oluştu: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -276,16 +315,56 @@ class _AuthPageState extends ConsumerState<_AuthPage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Alışkanlık takibini başlatmak için devam et.',
+                        'Alışkanlık takibini başlatmak için giriş yap.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: AppTheme.mutedText(context),
                         ),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 24),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black87,
+                          elevation: 1,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: const BorderSide(color: Colors.black12),
+                          ),
+                        ),
+                        onPressed: _loading ? null : _signInWithGoogle,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.network(
+                              'https://www.gstatic.com/images/branding/product/1x/g_logo_24dp.png',
+                              height: 20,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.login_rounded, size: 20),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Google ile Devam Et',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton(
                         onPressed: _loading ? null : _signInAnonymously,
-                        child: Text(_loading ? 'Bağlanıyor...' : 'Devam et'),
+                        child: Text(
+                          _loading ? 'Bağlanıyor...' : 'Misafir olarak devam et',
+                          style: TextStyle(
+                            color: AppTheme.mutedText(context),
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -451,6 +530,20 @@ class _SetupPageState extends ConsumerState<_SetupPage> {
   final TextEditingController _titleCtrl = TextEditingController();
   int _goal = 4;
   bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-populate display name from Google/Firebase user profile if available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final currentUser = ref.read(firebaseAuthProvider).currentUser;
+        if (currentUser != null && currentUser.displayName != null) {
+          _nameCtrl.text = currentUser.displayName!;
+        }
+      }
+    });
+  }
 
   @override
   void dispose() {

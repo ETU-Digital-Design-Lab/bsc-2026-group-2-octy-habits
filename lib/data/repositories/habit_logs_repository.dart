@@ -34,8 +34,10 @@ class HabitLogsRepository {
   static DateTime _dayOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 
   Stream<Map<String, bool>> watchTodayCompletions(DateTime today) {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return Stream.value(const <String, bool>{});
     final key = dateKey(today);
-    return _logsRef().where('dateKey', isEqualTo: key).snapshots().map((snap) {
+    return _db.collection('users').doc(uid).collection('habitLogs').where('dateKey', isEqualTo: key).snapshots().map((snap) {
       final map = <String, bool>{};
       for (final d in snap.docs) {
         final data = d.data();
@@ -52,9 +54,11 @@ class HabitLogsRepository {
     required DateTime start,
     required DateTime end,
   }) {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return Stream.value(const <String>{});
     final startKey = dateKey(_dayOnly(start));
     final endKey = dateKey(_dayOnly(end));
-    return _logsRef().snapshots().map((snap) {
+    return _db.collection('users').doc(uid).collection('habitLogs').snapshots().map((snap) {
       final keys = <String>{};
       for (final d in snap.docs) {
         final data = d.data();

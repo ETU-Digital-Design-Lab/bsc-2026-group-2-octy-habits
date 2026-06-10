@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,8 +13,44 @@ import 'features/settings/settings_page.dart';
 import 'features/assistant/ai_assistant_page.dart';
 import 'features/startup/startup_flow_page.dart';
 
+class GoRouterRefreshStream extends ChangeNotifier {
+  late final StreamSubscription<dynamic> _subscription;
+
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.asBroadcastStream().listen(
+          (dynamic _) => notifyListeners(),
+        );
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
 final appRouter = GoRouter(
   initialLocation: '/intro',
+  refreshListenable: GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges()),
+  redirect: (context, state) {
+    final user = FirebaseAuth.instance.currentUser;
+    final loggedIn = user != null;
+    
+    final matched = state.matchedLocation;
+    final goingToAuth = matched == '/gate' || matched == '/intro';
+
+    if (!loggedIn && !goingToAuth) {
+      return '/gate';
+    }
+    if (loggedIn && goingToAuth) {
+      if (matched == '/intro') {
+        return '/gate';
+      }
+      return null;
+    }
+    return null;
+  },
   routes: [
     GoRoute(path: '/intro', builder: (_, __) => const IntroPage()),
     GoRoute(

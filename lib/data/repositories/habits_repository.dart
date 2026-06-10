@@ -19,7 +19,9 @@ class HabitsRepository {
       _db.collection('users').doc(_uid).collection('habits');
 
   Stream<List<Habit>> watchHabits() {
-    return _habitsRef().snapshots().map(
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return Stream.value(const <Habit>[]);
+    return _db.collection('users').doc(uid).collection('habits').snapshots().map(
       (snap) => snap.docs.map((d) => Habit.fromDoc(d)).toList(),
     );
   }

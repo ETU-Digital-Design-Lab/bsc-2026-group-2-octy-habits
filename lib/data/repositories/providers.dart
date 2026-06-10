@@ -23,7 +23,7 @@ final authStateProvider = StreamProvider<User?>((ref) {
 });
 
 final userProfileProvider =
-    StreamProvider.family<Map<String, dynamic>?, String>((ref, uid) {
+    StreamProvider.family.autoDispose<Map<String, dynamic>?, String>((ref, uid) {
       return ref
           .watch(firestoreProvider)
           .collection('users')
@@ -53,11 +53,11 @@ final appEventsRepositoryProvider = Provider<AppEventsRepository>((ref) {
   );
 });
 
-final habitsStreamProvider = StreamProvider<List<Habit>>((ref) {
+final habitsStreamProvider = StreamProvider.autoDispose<List<Habit>>((ref) {
   return ref.watch(habitsRepositoryProvider).watchHabits();
 });
 
-final recentAppEventsProvider = StreamProvider<List<AppEventEntry>>((ref) {
+final recentAppEventsProvider = StreamProvider.autoDispose<List<AppEventEntry>>((ref) {
   return ref.watch(appEventsRepositoryProvider).watchRecentEvents(days: 7);
 });
 
@@ -72,14 +72,14 @@ final mlRiskModelProvider = FutureProvider<MlRiskModel?>((ref) async {
   }
 });
 
-final todayCompletionsProvider = StreamProvider<Map<String, bool>>((ref) {
+final todayCompletionsProvider = StreamProvider.autoDispose<Map<String, bool>>((ref) {
   return ref
       .watch(habitLogsRepositoryProvider)
       .watchTodayCompletions(DateTime.now());
 });
 
 /// ✅ Son 7 günde her habit kaç kez tamamlandı?  {habitId: count}
-final weeklyDoneCountsProvider = StreamProvider<Map<String, int>>((ref) {
+final weeklyDoneCountsProvider = StreamProvider.autoDispose<Map<String, int>>((ref) {
   final auth = ref.watch(firebaseAuthProvider);
   final db = ref.watch(firestoreProvider);
 
@@ -113,7 +113,7 @@ final weeklyDoneCountsProvider = StreamProvider<Map<String, int>>((ref) {
 });
 
 /// Son 7 gün için günlük toplam tamamlanma adetleri (eskiden bugüne).
-final weeklyDailyTotalsProvider = StreamProvider<List<int>>((ref) {
+final weeklyDailyTotalsProvider = StreamProvider.autoDispose<List<int>>((ref) {
   final auth = ref.watch(firebaseAuthProvider);
   final db = ref.watch(firestoreProvider);
 
@@ -152,7 +152,7 @@ final weeklyDailyTotalsProvider = StreamProvider<List<int>>((ref) {
 });
 
 /// Son 30 günde toplam tamamlanma.
-final last30DaysTotalCompletedProvider = StreamProvider<int>((ref) {
+final last30DaysTotalCompletedProvider = StreamProvider.autoDispose<int>((ref) {
   final auth = ref.watch(firebaseAuthProvider);
   final db = ref.watch(firestoreProvider);
 
@@ -184,7 +184,7 @@ final last30DaysTotalCompletedProvider = StreamProvider<int>((ref) {
 });
 
 /// ✅ Tek tip streak summary (AsyncValue değil) — çakışma bitti
-final streakSummaryProvider = Provider<StreakSummary>((ref) {
+final streakSummaryProvider = Provider.autoDispose<StreakSummary>((ref) {
   final habitsAsync = ref.watch(habitsStreamProvider);
 
   return habitsAsync.maybeWhen(
@@ -207,7 +207,7 @@ class StreakSummary {
   const StreakSummary({required this.current, required this.longest});
 }
 
-final octyInsightProvider = Provider<OctyInsight>((ref) {
+final octyInsightProvider = Provider.autoDispose<OctyInsight>((ref) {
   final habits = ref.watch(habitsStreamProvider).valueOrNull ?? const <Habit>[];
   final todayMap =
       ref.watch(todayCompletionsProvider).valueOrNull ?? const <String, bool>{};

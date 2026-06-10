@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -186,6 +187,36 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.dispose();
   }
 
+  Widget _buildErrorState(Object e) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Hata: $e',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.redAccent, fontSize: 16),
+            ),
+            const SizedBox(height: 18),
+            Text('User ID: ${FirebaseAuth.instance.currentUser?.uid}'),
+            Text('Email: ${FirebaseAuth.instance.currentUser?.email}'),
+            Text('Anonymous: ${FirebaseAuth.instance.currentUser?.isAnonymous}'),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) context.go('/gate');
+              },
+              child: const Text('Çıkış Yap ve Girişe Dön'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final habitsAsync = ref.watch(habitsStreamProvider);
@@ -200,16 +231,16 @@ class _HomePageState extends ConsumerState<HomePage> {
         child: SafeArea(
           child: habitsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text('Hata: $e')),
+            error: (e, _) => _buildErrorState(e),
             data: (habits) {
               return todayAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('Hata: $e')),
+                error: (e, _) => _buildErrorState(e),
                 data: (todayMap) {
                   return weeklyAsync.when(
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (e, _) => Center(child: Text('Hata: $e')),
+                    error: (e, _) => _buildErrorState(e),
                     data: (weeklyCounts) {
                       final prioritizedHabits = _prioritizedHabits(
                         habits: habits,
@@ -434,7 +465,6 @@ class _HomeRingBoard extends StatelessWidget {
             .clamp(230.0, 460.0)
             .toDouble();
 
-        final orbitSlots = itemCount;
         final itemSize =
             effectiveSize *
             (itemCount <= 3 ? 0.29 : (itemCount <= 5 ? 0.27 : 0.235));
