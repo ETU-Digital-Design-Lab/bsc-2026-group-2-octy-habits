@@ -11,21 +11,21 @@ Bu proje, **bsc-2026-group-2-ai-powered-habbit-tracker** kapsamında geliştiril
 
 ## 📂 Depo Yapısı (Repository Structure)
 
-Proje deposu, hocamızın belirttiği asgari standartlara uygun olarak aşağıdaki şekilde yapılandırılmıştır:
+Proje deposu aşağıdaki şekilde yapılandırılmıştır:
 
 ```
-├── README.md                 # Bu dosya (Proje genel açıklaması ve kurulum kılavuzu)
-├── report.pdf                # Proje Nihai Raporu (PDF formatında)
+├── README.md                 # Proje genel açıklaması ve kurulum kılavuzu
+├── report.pdf                # Proje Raporu
 ├── src/                      # Kaynak Kodlar (Flutter mobil uygulaması & Firebase Functions)
 │   ├── lib/                  # Flutter uygulama kaynak kodları
 │   ├── assets/               # Görsel varlıklar ve yerel makine öğrenimi modelleri
-│   ├── functions/            # Firebase Cloud Functions (Yapay zeka asistanı backend)
+│   ├── functions/            # Firebase Cloud Functions
 │   ├── test/                 # Birim ve entegrasyon testleri
 │   └── tools/                # Çevrimdışı ML veri seti ve model eğitim araçları
 ├── docs/                     # Sistem tasarımı, veritabanı şeması ve mimari belgeler
-├── simulations/              # Makine öğrenimi eğitim simülasyonları ve test verisi üreticileri
-├── results/                  # Uygulama içi ekran görüntüleri, test çıktıları ve ML sonuçları
-└── presentation/             # Proje sunum slaytları (PDF/PPTX) ve demo video linkleri
+├── simulations/              # Makine öğrenimi eğitim simülasyonları
+├── results/                  # Test çıktıları ve ML sonuçları
+└── presentation/             # Proje sunum slaytları ve video linkleri
 ```
 
 ---
@@ -42,7 +42,7 @@ Proje deposu, hocamızın belirttiği asgari standartlara uygun olarak aşağıd
 
 3. **Makine Öğrenimi Tabanlı Motivasyon Düşüşü Tahmini:**
    - Firestore'dan dışa aktarılan kullanıcı verileriyle eğitilen bir **Logistic Regression (Scikit-Learn)** modeli içerir.
-   - Kullanıcının önümüzdeki günlerde alışkanlık tamamlama motivasyonunun düşüp düşmeyeceğini tahmin eder ve risk analizine göre önceden uyarı sistemi (heuristics / ML engine) devreye girer.
+   - Kullanıcının önümüzdeki günlerde alışkanlık tamamlama motivasyonunun düşüp düşmeyeceğini tahmin eder ve risk analizine göre önceden uyarı sistemi devreye girer.
 
 4. **Gelişmiş İstatistikler ve Grafikler:**
    - Haftalık ve aylık bazda alışkanlık tamamlama oranları, en uzun seriler ve genel performans analizleri.
@@ -89,9 +89,6 @@ python src/tools/ml/train_logreg.py --csv dataset.csv --out src/assets/ml/model.
 
 ---
 
-## 👥 Grup Üyeleri (Group 2)
-- **Yunus Emre Yılmaz** - *Geliştirici / Öğrenci Bilgileri*
-- **Emirhan ÇELEN** - *220303021*
-
----
-*Bu proje, 2026 yılı Bilgisayar Mühendisliği Mezuniyet Projesi kapsamında geliştirilmiştir.*
+## 👥 Proje Ekibi
+- **Emre Yılmaz**
+- **Emir Çelen**
