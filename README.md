@@ -90,7 +90,8 @@ python src/tools/ml/train_logreg.py --csv dataset.csv --out src/assets/ml/model.
 ---
 
 ## 👥 Grup Üyeleri (Group 2)
-- **Emre Yılmaz** - *Geliştirici / Öğrenci Bilgileri* (Lütfen kendi isim/numaralarınızı buraya ekleyin)
+- **Yunus Emre Yılmaz** - *Geliştirici / Öğrenci Bilgileri*
+- **Emirhan ÇELEN** - *220303021*
 
 ---
 *Bu proje, 2026 yılı Bilgisayar Mühendisliği Mezuniyet Projesi kapsamında geliştirilmiştir.*
