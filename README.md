@@ -90,5 +90,6 @@ python src/tools/ml/train_logreg.py --csv dataset.csv --out src/assets/ml/model.
 ---
 
 ## 👥 Proje Ekibi
-- **Emre Yılmaz**
-- **Emir Çelen**
+- **Yunus Emre Yılmaz**
+- **Emirhan Çelen**
+
