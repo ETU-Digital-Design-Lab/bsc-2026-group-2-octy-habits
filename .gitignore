@@ -28,3 +28,7 @@ pip-selfcheck.json
 
 # Logs
 *.log
+
+# Local report drafts (word format)
+report.docx
+
